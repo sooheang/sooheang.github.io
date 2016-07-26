@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="Soo-Heang Eo, PhD" />
+  <meta name="dcterms.date" content="2016-07-26" />
+  <title>Tree-structured Methods and its Relationship with Deep Learning</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="20160721_files/reveal.js-3.2.0/css/reveal.css"/>
+
+
+
+<link rel="stylesheet" href="20160721_files/reveal.js-3.2.0/css/theme/night.css" id="theme">
+
+<style type="text/css">
+.reveal section img {
+  background: rgba(255, 255, 255, 0.85);
+}
+</style>
+
+  <!-- some tweaks to reveal css -->
+  <style type="text/css">
+    .reveal h1 { font-size: 2.0em; }
+    .reveal h2 { font-size: 1.5em;  }
+    .reveal h3 { font-size: 1.25em;	}
+    .reveal h4 { font-size: 1em;	}
+
+    .reveal .slides>section,
+    .reveal .slides>section>section {
+      padding: 0px 0px;
+    }
+
+
+
+    .reveal table {
+      border-width: 1px;
+      border-spacing: 2px;
+      border-style: dotted;
+      border-color: gray;
+      border-collapse: collapse;
+      font-size: 0.7em;
+    }
+
+    .reveal table th {
+      border-width: 1px;
+      padding-left: 10px;
+      padding-right: 25px;
+      font-weight: bold;
+      border-style: dotted;
+      border-color: gray;
+    }
+
+    .reveal table td {
+      border-width: 1px;
+      padding-left: 10px;
+      padding-right: 25px;
+      border-style: dotted;
+      border-color: gray;
+    }
+
+  </style>
+
+    <style type="text/css">code{white-space: pre;}</style>
+
+    <!-- Printing and PDF exports -->
+    <script>
+      var link = document.createElement( 'link' );
+      link.rel = 'stylesheet';
+      link.type = 'text/css';
+      link.href = window.location.search.match( /print-pdf/gi ) ? '20160721_files/reveal.js-3.2.0/css/print/pdf.css' : '20160721_files/reveal.js-3.2.0/css/print/paper.css';
+      document.getElementsByTagName( 'head' )[0].appendChild( link );
+    </script>
+    <!--[if lt IE 9]>
+    <script src="20160721_files/reveal.js-3.2.0/lib/js/html5shiv.js"></script>
+    <![endif]-->
+
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section>
+    <h1 class="title">Tree-structured Methods and its Relationship with Deep Learning</h1>
+    <h2 class="author">Soo-Heang Eo, PhD</h2>
+    <h3 class="date">July 26, 2016</h3>
+</section>
+
+<section><section id="outline" class="titleslide slide level1"><h1>OUTLINE</h1></section><section id="outline---tree-guided-tour" class="slide level2">
+<h1>OUTLINE - Tree Guided Tour</h1>
+<ul>
+<li><p>History of tree-structured models</p></li>
+<li>Tree-structured Models (a.k.a. Decision Tree)
+<ul>
+<li>CART<br />
+</li>
+<li>GUIDE including FACT/QUEST/CRUISE/MELT<br />
+</li>
+<li>PARTY<br />
+</li>
+<li>Miscellaneous<br />
+</li>
+<li>Case Studies using R</li>
+</ul></li>
+<li>Random Forests
+<ul>
+<li>Bremen’s Random Forests<br />
+</li>
+<li>GUIDE Forests<br />
+</li>
+<li>Random forests with conditional inference<br />
+</li>
+<li>Miscellaneous<br />
+</li>
+<li>Case Studies using R</li>
+</ul></li>
+</ul>
+</section><section id="outline---trees-with-neural-net" class="slide level2">
+<h1>OUTLINE - Trees with Neural Net</h1>
+<ul>
+<li>Trees as a nonparametric models
+<ul>
+<li>Trees as a K-NN</li>
+<li>Trees as an additive model<br />
+</li>
+<li>Trees as a neural networks</li>
+</ul></li>
+<li><p>Neural random forests</p></li>
+<li><p>Deep neural decision forests</p></li>
+</ul>
+</section></section>
+<section><section id="decision-tree-guided-tour" class="titleslide slide level1"><h1>Decision Tree Guided Tour</h1></section><section id="history" class="slide level2">
+<h1>History</h1>
+<p><img src="figs/AID1.png" alt="Image from xxx (1964)" /></p>
+</section></section>
+<section><section id="random-forest-guided-tour" class="titleslide slide level1"><h1>Random Forest Guided Tour</h1></section><section id="history-1" class="slide level2">
+<h1>History</h1>
+<p>History of Random Forest (RF)</p>
+</section><section id="breimans-rf-algorithm-2001" class="slide level2">
+<h1>Breiman’s RF Algorithm (2001)</h1>
+<p><img src="figs/rf_algorithm.png" alt="Figure 1 of Boulesteix et al. (2012)" /></p>
+</section><section id="parameters-for-rf-algorithm" class="slide level2">
+<h1>Parameters for RF algorithm</h1>
+<p>There are <strong>three</strong> parameters for RF algorithms:</p>
+<ul>
+<li><span class="math inline">\(a_n \in \{1, \ldots, n\}\)</span>: the number of sampled data points in each tree<br />
+</li>
+<li><span class="math inline">\(mtry \in \{1, \ldots, p\}\)</span>: the number of possible directions for splitting at each node of each tree<br />
+</li>
+<li><span class="math inline">\(nodesize \in \{1, \ldots, a_n \}\)</span>: the number of examples in each cell below which the cell is not split</li>
+</ul>
+<p>By default, in the <em>regression</em> mode of the <code>randomForest</code> package, the parameter<br />
+<code>mtry = ceiling(p / 3)</code>, <code>a_n = n</code>, and <code>nodesize = 5</code>.</p>
+</section><section id="breimans-rf-algorithm-2001-1" class="slide level2">
+<h1>Breiman’s RF Algorithm (2001)</h1>
+<p><img src="figs/rf_algorithm_formal.png" alt="Algorithm 1 of Biau and Scornet (2016)" />{ width: 50% background: none; }</p>
+</section><section id="variable-importance" class="slide level2">
+<h1>Variable Importance</h1>
+<p>RF can be used to rank the importance of variables via two measures of significance:</p>
+<ul>
+<li>Gini importance a.k.a Mean Decrease Impurity (Breiman, 2003a)
+<ul>
+<li>the total decrease in node impurity from splitting on the variablce, averaged over all trees</li>
+<li>yielding a high DGI when selected, leading to a high Gini VIM.</li>
+</ul></li>
+<li><em>Permutation Importance</em> a.k.a. Mean Decrease Accuracy (Breiman, 2001)
+<ul>
+<li>if the variable is not important, then rearranging its values shold not degrade prediction accuracy.</li>
+<li>the difference between the OOB error resulting from a data set obtained through random permutation of the predictor of interest and the OOB error resulting from the original dataset.</li>
+<li>Increase the OOB error, leading to a high permutation VIM</li>
+</ul></li>
+</ul>
+<p>For more detail, see [Goldstein et al. (2014)].</p>
+</section><section id="vim-mda" class="slide level2">
+<h1>VIM: MDA</h1>
+<p>Set <span class="math inline">\({\bf X} = (X^{(1)}, \ldots, X^{(p)}).\)</span><br />
+for a forest resulting from the aggregation of <span class="math inline">\(M\)</span> trees, the MDI of the variable <span class="math inline">\(X^{(j)}\)</span> is defiend by<br />
+<span class="math display">\[ 
+\hat{MDI}(X^{(j)}) = \frac{1}{M} \sum_{l = 1}^{M} \sum_{t \in \mathrf{T}_l} p_{n,t} L_{reg, n} (j_{n,t}, z_{n,t}),
+\]</span> where</p>
+</section><section id="vim-mdi" class="slide level2">
+<h1>VIM: MDI</h1>
+</section></section>
+<section><section id="case-studies-using-r-packages" class="titleslide slide level1"><h1>Case Studies using R packages</h1></section><section id="implementations-in-r" class="slide level2">
+<h1>Implementations in R</h1>
+<table>
+<thead>
+<tr class="header">
+<th>Tree-structured Models</th>
+<th>Random Forests</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>tree::tree</code></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><code>rpart::rpart</code></td>
+<td><code>randomForest::rf</code></td>
+</tr>
+<tr class="odd">
+<td><code>mvpart::mvpart</code></td>
+<td><code>randomForestSRC</code></td>
+</tr>
+<tr class="even">
+<td><code>party::mob</code></td>
+<td><code>Rborist</code></td>
+</tr>
+<tr class="odd">
+<td><code>psychotree:psychotree</code></td>
+<td><code>ranger::ranger</code></td>
+</tr>
+<tr class="even">
+<td><code>betareg::betatree</code></td>
+<td><code>party::cforest</code></td>
+</tr>
+<tr class="odd">
+<td><code>RWeka::M5</code></td>
+<td><code>quantregForest::</code></td>
+</tr>
+<tr class="even">
+<td><code>evtree::evtree</code></td>
+<td><code>LogicForest::</code></td>
+</tr>
+<tr class="odd">
+<td><code>REEMtree::REEMtree</code></td>
+<td></td>
+</tr>
+<tr class="even">
+<td><code>vcrpart::vcrpart</code></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><code>melt::melt</code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>For more details, see <code>CRAN Task View</code></p>
+</section><section id="data-car-dataset" class="slide level2">
+<h1>DATA: CAR dataset</h1>
+</section><section id="rpart" class="slide level2">
+<h1>rpart</h1>
+<pre><code>## n= 81 
+## 
+## node), split, n, loss, yval, (yprob)
+##       * denotes terminal node
+## 
+##  1) root 81 17 absent (0.79012346 0.20987654)  
+##    2) Start&gt;=8.5 62  6 absent (0.90322581 0.09677419)  
+##      4) Start&gt;=14.5 29  0 absent (1.00000000 0.00000000) *
+##      5) Start&lt; 14.5 33  6 absent (0.81818182 0.18181818)  
+##       10) Age&lt; 55 12  0 absent (1.00000000 0.00000000) *
+##       11) Age&gt;=55 21  6 absent (0.71428571 0.28571429)  
+##         22) Age&gt;=111 14  2 absent (0.85714286 0.14285714) *
+##         23) Age&lt; 111 7  3 present (0.42857143 0.57142857) *
+##    3) Start&lt; 8.5 19  8 present (0.42105263 0.57894737) *</code></pre>
+<p><img src="20160721_files/figure-revealjs/unnamed-chunk-2-1.png" width="768" /></p>
+</section><section id="mxnet" class="slide level2">
+<h1>mxnet</h1>
+</section><section id="data-car-data" class="slide level2">
+<h1>DATA: CAR Data</h1>
+<p><img src="figs/LendingClubMain.png" /></p>
+<p><a href="https://www.lendingclub.com/">See Lending Club</a></p>
+</section><section id="data-lending-club-loan-data" class="slide level2">
+<h1>DATA: Lending Club Loan Data</h1>
+<p><img src="figs/LendingClubImage1.png" /></p>
+<p><a href="https://www.lendingclub.com/info/statistics.action">See Lending Club Loan Data</a></p>
+</section><section id="data-lending-club-loan-data-1" class="slide level2">
+<h1>DATA: Lending Club Loan Data</h1>
+<p><img src="figs/LendingClubData.png" /></p>
+</section></section>
+<section><section id="trees-with-relationship-to-other-methods" class="titleslide slide level1"><h1>Trees with Relationship to Other Methods</h1></section><section id="trees-as-a-nearest-neighbors" class="slide level2">
+<h1>Trees as a Nearest Neighbors</h1>
+<p>For more detail, See<a href="">Lin and Jeon (2006)</a>.</p>
+</section><section id="trees-as-a-nonparametric-models" class="slide level2">
+<h1>Trees as a nonparametric models</h1>
+</section><section id="neural-random-forests" class="slide level2">
+<h1>Neural random forests</h1>
+</section><section id="deep-neural-decision-forests" class="slide level2">
+<h1>Deep neural decision forests</h1>
+</section></section>
+    </div>
+  </div>
+
+  <script src="20160721_files/reveal.js-3.2.0/lib/js/head.min.js"></script>
+  <script src="20160721_files/reveal.js-3.2.0/js/reveal.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        // Display the page number of the current slide
+        slideNumber: true,
+        // Vertical centering of slides
+        center: true,
+        // Opens links in an iframe preview overlay
+        previewLinks: true,
+        // Transition style
+        transition: 'fade', // none/fade/slide/convex/concave/zoom
+        // Transition style for full page slide backgrounds
+        backgroundTransition: 'default', // none/fade/slide/convex/concave/zoom
+
+        // Optional reveal.js plugins
+        dependencies: []
+      });
+    </script>
+  <!-- dynamically load mathjax for compatibility with self-contained -->
+  <script>
+    (function () {
+      var script = document.createElement("script");
+      script.type = "text/javascript";
+      script.src  = "20160721_files/mathjax-local/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+      document.getElementsByTagName("head")[0].appendChild(script);
+    })();
+  </script>
+
+<script>
+  (function() {
+    if (window.jQuery) {
+      Reveal.addEventListener( 'slidechanged', function(event) {  
+        window.jQuery(event.previousSlide).trigger('hidden');
+        window.jQuery(event.currentSlide).trigger('shown');
+      });
+    }
+  })();
+</script>
+
+
+  </body>
+</html>

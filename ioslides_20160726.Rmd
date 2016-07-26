@@ -1,0 +1,902 @@
+---
+title: "Tree-structured Methods and its Relationship with Deep Learning"
+author: "Soo-Heang Eo, PhD"
+date: "July 26, 2016"
+output:
+  ioslides_presentation:
+    fig_caption: yes
+    smaller: yes
+    widescreen: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+# OUTLINE
+
+
+## OUTLINE - Tree and Random Forest  
+
+  * Tree-structured Models (a.k.a. Decision Tree)  
+    + CART  
+    + GUIDE
+    + PARTY  
+    + Extentions of Decesion Tree: Subgroup Identification  
+    + Case Studies using R
+    
+  * Random Forests
+    + Bremen’s Random Forests  
+    + Random forests with conditional inference  
+    + GUIDE Forests (options)
+    + Extensions   
+    + Case Studies using R
+
+## OUTLINE -  Trees with Neural Net  
+
+  * Trees as a nonparametric models  
+    + Trees as a K-NN 
+    + Trees as an additive model  
+    + Trees as a neural networks  
+
+  * Neural random forests  
+
+  * Deep neural decision forests  
+
+
+
+# Decision Tree Guided Tour
+
+## What is a Decision Tree?
+
+<div class = "centered">
+```{r, out.height = 400, echo = FALSE}
+knitr::include_graphics(path = 'figs/motiv0.png')
+```
+</div>
+
+## What is a Decision Tree?
+
+<div class = "centered">
+```{r, out.height = 400, echo = FALSE}
+knitr::include_graphics(path = 'figs/motiv00.png')
+```
+</div>
+
+
+## What is a Decision Tree?
+
+A _decision tree_ is a logical model represented as a tree that shows how the value of a target variable can be predicted by using the values of a set of predictor (input) variables.   
+
+A decision tree _recursively partitions_ the data and sample space to construct the predictive model.   
+
+Its name derives from _the practice of displaying the partitions_ as a decision tree, from which the roles of the predictor variables may be inferred.   
+
+A _classification or regression tree_ is a prediction model that can be represented as a decision tree.  
+
+A _tree-structured classifier_ is a decision tree for predicting a class variable from one or more predictor variables.  
+
+A _regression tree model_ is a nonparametric estimate of a regression function constructed by recursively partitioning a data set with the values of its predictor variables.  
+
+_Recursive partitioning_ methods have become popular and widely used tools for nonparametric regression and classification in many scientific fields.  
+
+
+## Motivation Example of Decision Tree
+
+<div class = "centered">
+```{r, out.width = 800, echo = FALSE}
+knitr::include_graphics(path = 'figs/AID1.png')
+```
+</div>
+
+<div class = "centered">
+```{r, out.height = 500, echo = FALSE}
+knitr::include_graphics(path = 'figs/motiv1.png')
+```
+
+Morgan and Sonquist (1964, JASA)
+</div>
+
+## Motivation Example of Decision Tree
+
+<div class = "centered">
+```{r, out.height = 500, echo = FALSE}
+knitr::include_graphics(path = 'figs/motiv2.png')
+```
+
+Morgan and Sonquist (1964, JASA)
+</div>
+
+## Motivation Example of Decision Tree
+
+<div class = "centered">
+```{r, out.height = 500, echo = FALSE}
+knitr::include_graphics(path = 'figs/motiv3.png')
+```
+
+Morgan and Sonquist (1964, JASA)
+</div>
+
+## Elements of Decision Tree
+
+An empirical tree represents a segmentation of the data that is created by applying a series of split rules. Each split rule assigns an observation to a segment based on the values of inputs. 
+
+One rule is applied after another, resulting in a hierarchy of segments within segments. The hierarchy is called a tree, and each segment is called a node. 
+
+The original segment contains the entire data set and is called the root node of the tree. A node with all its successors forms a branch of the node that created it. 
+
+The nodes that have child nodes are called interior (or internal, intermediate)  nodes. The final nodes that do not have child nodes are called leaves (or terminal nodes). For each leaf, a decision is made and applied to all observations in the leaf. 
+
+The type of decision depends on the context. In predictive modeling, the decision is simply the predicted value. 
+
+
+## Building and utilizing a Decision Tree
+
+  - Splitting recursively  
+    + Partition the data and sample space recursively to construct a predictive model.
+    + Split selection: split variable selection and split set selection
+
+  - Determining a tree size
+    + Partitioning continues until stopping criteria are met. (Stopping criteria: sample size, impurity, improvement, and so on)
+    + Partitioning continues until node sample sizes are too small, and then prune insignificant nodes that cause over-fitting.
+
+  - Interpretation and Prediction
+    + Interpret the final predictive tree model with the significant split variables.
+    + Predict target values of new data using the final predictive tree model.
+
+## Split Rule Selection
+
+  - Split rule: consisting of a split variable and a split point (or set).
+    + $X \leq c$ for ordered variable 
+    + $X \in A$ for unordered variable 
+
+  - Split rule: determined by examining all possible splits (exhaustive search) or performing statistical tests
+
+  - Good split rule: the data being homogeneous within each subnode and heterogeneous between subnodes.
+
+## Determination of Tree Size
+
+  - Naïve stopping rule: Stop splitting if
+    + a node sample size is small,
+    + a node impurity is low,
+    + or an improvement is minor.
+
+  - Pruning rule: 
+    + Step 1: Stop splitting if a node sample size is small.
+    + Step 2: Prune off unnecessary branches.
+
+## Some Review Paper
+
+- Loh, W.-Y. (2008). Regression by parts: Fitting visually interpretable models with GUIDE. In Handbook of Data Visualization, C.Chen, W.Härdle, and A.Unwin, Eds. Springer, pp.447-469.
+
+- Loh, W.-Y.  (2008). Classification and regression tree methods. In Encyclopedia of Statistics in Quality and Reliability, F.Ruggeri, R.Kenett, and F.W. Faltin, Eds. Wiley, Chichester, UK, pp.315-323.
+
+- Loh, W.-Y.  (2010). Tree-structured classifiers. Wiley Interdisciplinary Reviews: Computational Statistics, 2, 364-369.
+
+- Loh, W.-Y. (2011). Classification and regression trees. Wiley Interdisciplinary Reviews: Data Mining and Knowledge Discovery, 14-23.
+
+- __Loh, W.-Y.  (2014). Fifty years of classification and regression trees (with discussion). International Statistical Review.__
+
+- Merkle, E.C. and Shaffer, V.A. (2011). Binary recursive partitioning: Background, methods, and application to psychology, British Journal of Mathematical and Statistical Psychology, 64, 161–181.
+
+- Morgan, J. N. and Sonquist, J. A. (1963). Problems in the analysis of survey data, and a proposal. J. Amer. Statist. Assoc. 58 415–434.
+
+- Strobl, C.,  Malley, J. and Tutz, G. (2009).  An Introduction to Recursive Partitioning: Rationale, Application, and Characteristics of Classification and Regression Trees, Bagging, and Random forests. Psychological Methods, 14(4), 323–348. 
+
+
+
+# Major Tree Algorithms
+
+## Major Regression Tree Algorithms
+
+- Piecewise constant least squares models: AID (Morgan and Sonquist, 1964), CART, RPART, GUIDE (Loh, 2002)
+
+- Piecewise linear least squares, polynomial regression, quantile regression, and longitudinal and multi-responses data effects: Loh (2014) with discussion
+
+- Subgroup identification of differential treatment effects: Loh et al. (2014), Hothorn et al. (2014)
+
+- Others: M5 (Quinlan, 1992), MOB (Zeileis et al., 2008), MELT (Eo and Cho, 2014), KAPS (Eo et al., 2015)
+
+- Missing values, selection bias, accuracy, speed, and tree complexity
+
+- Diagnostic tool: [Simonoff (2013)](http://www.statmod.org/smij/Vol13/Iss5&6/Simonoff/Abstract.html)
+
+## Notations
+
+<div class = "columns-2">
+- Basic notations  
+```{r, out.width = 500, echo = FALSE}
+knitr::include_graphics(path = 'figs/Notations.png')
+```
+
+- More notations  
+```{r, out.width = 500, echo = FALSE}
+knitr::include_graphics(path = 'figs/Notations_more.png')
+```
+</div>
+
+## CART: Node Impurity Measures (Node Model)
+
+<div class = "centered">
+```{r, out.width = 800, echo = FALSE}
+knitr::include_graphics(path = 'figs/CART_reg_impurity.png')
+```
+</div>
+
+
+## CART: Split Set Selection
+
+<div class = "centered">
+```{r, out.width = 800, echo = FALSE}
+knitr::include_graphics(path = 'figs/CART_split.png')
+```
+</div>
+
+## CART: Split Set Selection
+
+<div class = "centered">
+```{r, out.width = 800, echo = FALSE}
+knitr::include_graphics(path = 'figs/CART_split2.png')
+```
+</div>
+
+
+## CART: Cost-Complexity Pruning
+
+<div class = "centered">
+```{r, out.width = 800, echo = FALSE}
+knitr::include_graphics(path = 'figs/CART_ccpruning.png')
+```
+</div>
+
+## CART: Subtree Selection by $V$-fold cross-validation
+<div class = "centered">
+```{r, out.width = 800, echo = FALSE}
+knitr::include_graphics(path = 'figs/CART_vFold.png')
+```
+</div>
+
+## CART: $V$-fold cross-validation
+<div class = "centered">
+```{r, out.width = 800, echo = FALSE}
+knitr::include_graphics(path = 'figs/pruning.png')
+```
+</div>
+
+## CART: $k$-SE Rule
+<div class = "centered">
+```{r, out.width = 800, echo = FALSE}
+knitr::include_graphics(path = 'figs/CART-kSE.png')
+```
+</div>
+
+## CART: Surrogate Splits
+<div class = "centered">
+```{r, out.width = 800, echo = FALSE}
+knitr::include_graphics(path = 'figs/CART_missing.png')
+```
+</div>
+
+## CART: Surrogate Splits Algorithm
+<div class = "centered">
+```{r, out.width = 800, echo = FALSE}
+knitr::include_graphics(path = 'figs/CART_missing_alg.png')
+```
+</div>
+
+## CART: Uses of Surrogate Splits
+
+- Enable tree construction when there are missing values in the learning sample  
+
+- Enable classification of new cases with missing values  
+
+- Rank variables by their order of importance (not available in `rpart`)
+
+- Detect masking of variables
+
+## CART: Importance Ranking of predictor variables
+<div class = "centered">
+```{r, out.width = 800, echo = FALSE}
+knitr::include_graphics(path = 'figs/CART_importance_ranking.png')
+```
+</div>
+
+## CART: Problems
+
+- Biased toward variables with more splits: A k-valued ordered variable has (k − 1) splits; a k-valued categorical variable has (2k−1 − 1) splits.   
+
+- Biased toward predictors with more missing values: Split method uses only proportions of nonmissing cases—it ignores the number of missing values. A variable taking a unique value for exactly one case in each class and missing on all other cases yields the largest decrease in impurity. Bias exists for surrogate splits too.   
+
+- Computation: Impractical when there are three or more classes and categorical variables with many values. Note: Because CART and RPART encode each categorical variable split with a 32-bit binary integer, they do not properly deal with categorical variables having more than 32 values.  
+
+- Prediction accuracy: Often no better than linear discriminant analysis.   
+
+
+## GUIDE: Residual-based Tree-structured Modeling (Residual Analysis)
+<div class = "centered">
+```{r, out.width = 800, echo = FALSE}
+knitr::include_graphics(path = 'figs/GUIDE_node.png')
+```
+</div>
+
+
+
+## GUIDE: Split Variable Selection
+<div class = "centered">
+```{r, out.width = 800, echo = FALSE}
+knitr::include_graphics(path = 'figs/GUIDE_split_summary.png')
+```
+</div>
+
+## GUIDE: Split Variable Selection
+<div class = "centered">
+```{r, out.width = 800, echo = FALSE}
+knitr::include_graphics(path = 'figs/GUIDE_Split_Variable.png')
+```
+</div>
+
+## GUIDE: Split Set Selection
+<div class = "centered">
+```{r, out.width = 800, echo = FALSE}
+knitr::include_graphics(path = 'figs/GUIDE_split_set.png')
+```
+</div>
+
+
+
+
+## GUIDE: Importance Ranking
+<div class = "centered">
+```{r, out.width = 800, echo = FALSE}
+knitr::include_graphics(path = 'figs/GUIDE_importance_ranking.png')
+```
+</div>
+
+## GUIDE: Importance Ranking
+<div class = "centered">
+```{r, out.width = 800, echo = FALSE}
+knitr::include_graphics(path = 'figs/GUIDE_importance_ranking2.png')
+```
+</div>
+
+
+## CTREE/MOB: Tree-structured Models with Conditional Inference
+<div class = "centered">
+```{r, out.width = 800, echo = FALSE}
+knitr::include_graphics(path = 'figs/ctree_dist.png')
+```
+</div>
+
+
+## CTREE/MOB: Generic Algorithm
+<div class = "centered">
+```{r, out.width = 800, echo = FALSE}
+knitr::include_graphics(path = 'figs/ctree_generic.png')
+```
+</div>
+
+## CTREE/MOB: Statistical Testing
+<div class = "centered">
+```{r, out.width = 800, echo = FALSE}
+knitr::include_graphics(path = 'figs/ctree_CI.png')
+```
+</div>
+
+For more details, See [the talk slide](http://eeecon.uibk.ac.at/~zeileis/papers/GfKl-2006a.pdf).
+
+## CTREE/MOB: Selection of Split Variable
+<div class = "centered">
+```{r, out.width = 800, echo = FALSE}
+knitr::include_graphics(path = 'figs/ctree_split.png')
+```
+</div>
+
+
+## CTREE/MOB: Parameter Instability Test
+<div class = "centered">
+```{r, out.width = 800, echo = FALSE}
+knitr::include_graphics(path = 'figs/ctree_testing.png')
+```
+</div>
+
+
+## CTREE/MOB: Pruning
+
+<div class = "centered">
+```{r, out.width = 800, echo = FALSE}
+knitr::include_graphics(path = 'figs/ctree_pruning.png')
+```
+</div>
+See [the JCGS paper](http://eeecon.uibk.ac.at/~zeileis/papers/Zeileis+Hothorn+Hornik-2008.pdf)
+
+# Subgroup Identification via Recursive Partitioning
+
+## Motivation
+
+<div class = "centered">
+```{r, out.width = 800, echo = FALSE}
+knitr::include_graphics(path = 'figs/subgroup_motiv1.png')
+```
+</div>
+
+## Motivation
+
+<div class = "centered">
+```{r, out.width = 800, echo = FALSE}
+knitr::include_graphics(path = 'figs/subgroup_motiv2.png')
+```
+</div>
+
+## Motivation
+
+<div class = "centered">
+```{r, out.width = 800, echo = FALSE}
+knitr::include_graphics(path = 'figs/subgroup_motiv3.png')
+```
+</div>
+
+## Motivation
+
+<div class = "centered">
+```{r, out.width = 800, echo = FALSE}
+knitr::include_graphics(path = 'figs/subgroup_motiv4.png')
+```
+</div>
+
+## Motivation
+
+<div class = "centered">
+```{r, out.width = 800, echo = FALSE}
+knitr::include_graphics(path = 'figs/subgroup_motiv5.png')
+```
+</div>
+
+## Motivation
+
+<div class = "centered">
+```{r, out.width = 600, echo = FALSE}
+knitr::include_graphics(path = 'figs/subgroup_motiv6.png')
+```
+</div>
+
+At each node, a case goes to the left child node if stated condition is satisfied. Sample sizes are beside terminal nodes.  
+95% bootstrap intervals for relative risk of treatment vs. placebo below nodes.
+
+## Subgroup Analyses
+
+Identifying groups of patients for whom the treatment has a different effect than for others.
+Effect is:
+
+– Stronger   
+– Lower  
+– Contrary  
+
+than the average treatment effect.
+
+Suitable models promise better prediction of treatment effect and thus individualised treatments.
+
+<div class = "centered">
+_Regression trees are natural for subgroup identification_  
+</div>
+- subgroups are defined by terminal nodes of a tree.
+
+## Key Ideas 
+
+  - Use Piecewise-Linear Models
+    + Use Poisson regression to fit a proportional hazards model to each node
+  
+  - Examine residual patterns for each treatment level
+  
+  - Why group ordinal variables?
+    + Grouping values of ordinal X variables may result in power loss 
+    + But grouping allows missing values to be used!
+  
+  - Test for treatment interaction
+
+  - Perturb population instead of dat
+
+## Key Ideas: Use Piecewise-Linear Models
+
+<div class = "centered">
+```{r, out.width = 750, echo = FALSE}
+knitr::include_graphics(path = 'figs/subgroup_key1.png')
+```
+</div>
+
+## Key Ideas: Examine Residual Patterns
+
+<div class = "centered">
+```{r, out.width = 750, echo = FALSE}
+knitr::include_graphics(path = 'figs/subgroup_key2.png')
+```
+</div>
+
+## Key IdeasL Perturb Poputation
+
+<div class = "centered">
+```{r, out.width = 750, echo = FALSE}
+knitr::include_graphics(path = 'figs/subgroup_key3.png')
+```
+</div>
+
+
+## GUIDE Subgroup Identification Algorithm
+
+<div class = "centered">
+```{r, out.width = 750, echo = FALSE}
+knitr::include_graphics(path = 'figs/subgroup_alg.png')
+```
+</div>
+
+
+# Case Studies using R
+
+## Implementation
+
+See **[partykit](http://eeecon.uibk.ac.at/~zeileis/papers/NUS-2014.pdf)** package in order  to build a tree-structured model
+
+`tree::tree`                 
+`rpart::rpart`               
+`mvpart::mvpart`             
+`party::mob`                 
+`psychotree:psychotree`      
+`betareg::betatree`          
+`RWeka::M5`                  
+`evtree::evtree`             
+`REEMtree::REEMtree`         
+`vcrpart::vcrpart`           
+`kaps::kaps`
+`melt::melt`                 
+
+
+# Random Forest Guided Tour
+
+## Motivation
+
+  - Tree-structured Modeling
+    + Weak learner
+    + Large variance
+
+  - Key Idea
+    + $Var(X) = \sigma^2 \rightarrow Var(\frac{1}{n}\sum_{i=1}^{n}X_i) = \frac{\sigma^2}{n}$
+    + with resampling techniques
+    
+    
+## History
+
+  History of Random Forest (RF)
+
+
+## Breiman's RF Algorithm (2001)
+
+<div class = "centered">
+```{r, out.width = 600, echo = FALSE}
+knitr::include_graphics(path = 'figs/rf_algorithm.png')
+```
+
+Figure 1 of Boulesteix et al. (2012)
+</div>
+
+## Parameters for RF algorithm
+
+ There are **three** parameters for RF algorithms:
+
+  * $a_n \in \{1, \ldots, n\}$: the number of sampled data points in each tree  
+  * $mtry \in \{1, \ldots, p\}$: the number of possible directions for splitting at each node of each tree  
+  * $nodesize  \in \{1, \ldots, a_n \}$: the number of examples in each cell below which the cell is not split  
+
+  By default, in the *regression* mode of the `randomForest` package, the parameter  
+  `mtry = ceiling(p / 3)`, `a_n = n`, and `nodesize = 5`.
+
+## Breiman's RF Algorithm (2001)
+
+<div class = "centered">
+```{r, out.width = 600, echo = FALSE}
+knitr::include_graphics(path = 'figs/rf_algorithm_formal.png')
+```
+
+Algorithm 1 of Biau and Scornet (2016)
+</div>
+
+
+## Variable Importance
+
+RF can be used to rank the importance of variables via two measures of significance:
+
+  * Gini importance a.k.a Mean Decrease Impurity (Breiman, 2003a)
+    + the total decrease in node impurity from splitting on the variablce, averaged over all trees
+    + yielding a high DGI when selected, leading to a high Gini VIM.
+  * *Permutation Importance* a.k.a. Mean Decrease Accuracy (Breiman, 2001)
+    + if the variable is not important, then rearranging its values shold not degrade prediction accuracy.
+    + the difference between the OOB error resulting from a data set obtained through random permutation of the predictor of interest and the OOB error resulting from the original dataset.
+    + Increase the OOB error, leading to a high permutation VIM
+
+For more detail, see [Goldstein et al. (2014)].
+
+## VIM: MDA
+
+Set ${\bf X} = (X^{(1)}, \ldots, X^{(p)}).$  
+For a forest resulting from the aggregation of $M$ trees, the MDI of the variable $X^{(j)}$ is defiend by  
+$$ 
+\hat{MDI}(X^{(j)}) = \frac{1}{M} \sum_{l = 1}^{M} \sum_{t \in \mathrf{T}_l} p_{n,t} L_{reg, n} (j_{n,t}, z_{n,t}),
+$$
+where  
+
+
+
+## VIM: MDI
+
+
+
+
+## Conditional Forest
+
+For more details, See [useR 2008 talk slide](http://www.statistik.uni-dortmund.de/useR-2008/slides/Strobl+Zeileis.pdf).
+
+
+
+## GUIDE Forest
+
+<div class = "centered">
+```{r, out.width = 800, echo = FALSE}
+knitr::include_graphics(path = 'figs/GUIDE_RF.png')
+```
+</div>
+
+For more details, See [the JSCS paper].
+
+
+
+# Extensions of Random Forests
+
+## Survival Forests
+
+
+## Online Forests
+
+Online learning is a method in which data becomes available in a sequential order and is used to update our best predictor for future data at each step, as opposed to batch learning techniques which generate the best predictor by learning on the entire training dataset at once
+
+  - [Yi et al. (2012)](http://vision.ucla.edu/papers/yiS12ITA.pdf) propose **Information Forests** whose construction consists in deferring classification until a measure of classification confidence is sufficiently high, and in fact break down the data so as to maximize this measure.
+  - [Lakshminarayanan et al. (2014)](https://arxiv.org/abs/1406.2673) porpose **Mondrian Forests** which are grown in an online fashion and achieve competitive predicive performance comparable with other online random forests while being faster.
+    + [Mondrian Forests](http://videolectures.net/site/normal_dl/tag=939850/sahd2014_teh_mondrian_forests_01.pdf) = Mondrian process + RF  
+    + Mondrian process: a stochastic process over binary hierarchical axis-aligned partitions of $R^d$ ([Roy and Tch, 2009](http://www.stats.ox.ac.uk/~teh/research/npbayes/RoyTeh2009a.pdf))
+    + See [Prof. Teh's talk](http://videolectures.net/sahd2014_teh_mondrian_forests/)
+    + Python package is available at [Github](https://github.com/balajiln/mondrianforest)
+
+
+## Missing Data
+
+One of the strengths of RF is that they can handle missing data.
+
+<div class = "columns-2">
+
+#### Hapfelmeier's Algorithm
+1. Compute the OOB prediction error of a tree
+2. Randomly assign each observation with $p_k$ to the child nodes of a node k that uses $X_i$ for its primary split.
+3. Recompute the OOB prediction error of the tree, following step 2.
+4. Compute the difference between the original and recomputed OOB prediction errors.
+5. Repeat steps 1-4 for each tree and the average difference of OOB prediction errors over all trees as the overall estimate.
+
+
+  - [Breiman (2003)](https://www.stat.berkeley.edu/~breiman/Using_random_forests_v4.0.pdf) utilize $proximity matrix$, which measures the proximity between pairs of observations in the forest, to estimate missing values.
+  - [Rieger et al. (2010)](https://epub.ub.uni-muenchen.de/11481/1/techreport.pdf) introduce data imputation based on random forests.In sum, there is no clear advantage for either $knn$-imputation or surrogate variabels for dealing with missing values in the predictor variables.
+  - [Hapfelmeier et al. (2014a; 2014b)](http://www.statistik.lmu.de/PR2/lehre/sk2011/Hapfelmeier.pdf) propose new variable importance measures when a covariate contains missing. 
+
+</div>
+
+## Unbalanced Data
+
+RF can naturally be adapted to fit the unbalanced data framework by *down-sapling* the majority class and growing each tree on a more balanced dataset ([Chen et al. 2004](http://statistics.berkeley.edu/sites/default/files/tech-reports/666.pdf); [Kuhn and Johnson, 2013](http://appliedpredictivemodeling.com/blog/2013/12/8/28rmc2lv96h8fw8700zm4nl50busep)).
+
+  * Recall that RF is a tree ensemble method. A large number of bootstrap samples are taken from the training data and a separate unpruned tree is crated for each dataset.
+  * This means that if there are n training set instances, the resulting sample will select n samples with replacement
+  * To incorporate down-sampling, random forest can take a random sample of size $c \times nmin$, where c is the number of classes and nmin is the number of samples in the minority class. 
+  
+[Fink et al. (2010)](http://www.personal.psu.edu/bas59/papers/fink-2010a.pdf) use RF for which each tree is traned and allowed to prediction on a particular region in space and time.
+
+<div class = "centered">
+```{r, out.height = 250, echo = FALSE}
+path = 'http://static1.squarespace.com/static/51156277e4b0b8b2ffe11c00/t/52a4d8dfe4b07f1ff7babb18/1386535138120/Ch16_samplingplot.png?format=1500w'
+knitr::include_graphics(path)
+```
+</div>
+
+
+## Single Class Data (One Class Classification)
+One-class classification (unary classification) tries to identify objects of a **specific** class amongst all objects, by learning from a training set containing *only the objects of that class*.
+
+<div class = "columns-2">
+  
+  ```{r, out.width = 500, echo = FALSE}
+  path = 'figs/OCRF_algorithm.png'
+  knitr::include_graphics(path)
+  ```
+
+  - [Desir et al. (2013)](https://hal.archives-ouvertes.fr/hal-00862706/document) study the _One Class Random Forests_, which is designed to solve this particular problem. 
+  - [Geremia et al. (2013)](http://www-sop.inria.fr/asclepios/Publications/Ezequiel.Geremia/Geremia_ISBI_2013.pdf) proposed *Spatially Adaptive Random Forest* to deal with semantic image segmentation applied to medical imaging protocols.
+
+</div>
+
+
+## Unsupervised Learning 
+
+  - Define an RF dissimilarity measure between unlabeled data.
+    + The idea is to construct an RF predictor that distinguishes the “observed” data from suitably generated **synthetic** data.
+    + A synthetic class outcome is defined by labeling the observed data by class 1 and the synthetic data by class 2. By restricting the resulting labeled similarity measure to the observed data, one can define a similarity measure between unlabeled observations. The similarity measure strongly depends on how the synthetic observations are generated.
+    + See [Shi and Hovath (2007; JCGS)](https://labs.genetics.ucla.edu/horvath/RFclustering/RFclustering/RandomForestHorvath.pdf).
+
+  - Yan et al. (2013) present a new clustering method called *Cluster Forests* which randomly probes a high-dimensinoal data cloud to obtain good local clusterings, then aggregates via spectral clustering to obtain cluster assignments for the whole dataset.
+
+# Case Studies using R packages
+
+
+## Implementations in R
+
+ Tree-structured Models      | Random Forests
+---------------------------- | ------------------------
+`tree::tree`                 |
+`rpart::rpart`               | `randomForest::rf`
+`mvpart::mvpart`             | `randomForestSRC`
+`party::mob`                 | `Rborist`
+`psychotree:psychotree`      | **`ranger::ranger`**
+`betareg::betatree`          | `party::cforest`
+`RWeka::M5`                  | `quantregForest::`
+`evtree::evtree`             | `LogicForest::`
+`REEMtree::REEMtree`         |
+`vcrpart::vcrpart`           | 
+`melt::melt`                 |
+
+For more details, see `CRAN Task View` 
+
+
+
+## DATA: CAR dataset
+
+```{r, eval = FALSE}
+data(kyphosis)
+head(kyphosis)
+```
+
+## rpart
+
+```{r, eval = FALSE}
+library(rpart)
+fit <- rpart(Kyphosis ~ Age + Number + Start, data = kyphosis)
+fit
+plot(fit)
+text(fit)
+```
+
+## mxnet
+
+```{r, eval = FALSE}
+library(mxnet)
+X <- kyphosis[,-1]
+Y <- kyphosis[,1]
+
+data <- mx.symbol.Variable("data")
+fc1 <- mx.symbol.FullyConnected(data, name="fc1", num_hidden=128)
+act1 <- mx.symbol.Activation(fc1, name="relu1", act_type="relu")
+fc2 <- mx.symbol.FullyConnected(act1, name="fc2", num_hidden=64)
+act2 <- mx.symbol.Activation(fc2, name="relu2", act_type="relu")
+fc3 <- mx.symbol.FullyConnected(act2, name="fc3", num_hidden=10)
+softmax <- mx.symbol.SoftmaxOutput(fc3, name="sm")
+
+devices <- mx.cpu()
+
+mx.set.seed(0)
+model <- mx.model.FeedForward.create(softmax, X=X, y=Y,
+                                     ctx=devices, num.round=10, array.batch.size=100,
+                                     learning.rate=0.07, momentum=0.9,  eval.metric=mx.metric.accuracy,
+                                     initializer=mx.init.uniform(0.07),
+                                     epoch.end.callback=mx.callback.log.train.metric(100))
+
+```
+
+
+# Trees with Relationship to Other Methods
+
+## $K$-Nearest Neighbors Algoirthm
+
+  - Defer the decision to generalize beyond the training examples till a new query is encountered
+  - Whenever we have a new point to classify, we find its K nearest neighbors from the training data.
+
+<div class = "columns-2">
+  
+  ```{r, out.width = 500, echo = FALSE}
+  path = 'figs/KNN_algorithm.png'
+  knitr::include_graphics(path)
+  ```
+
+  - Algorithm
+    + For each training observation, add the data to the list of training observations
+    + Given a query instance $x_q$ to be classified, let $x_1, \ldots, x_k$ denote the $k$ instances from training observations that are nearest to $x_q$.
+    + Retrun the class that represents the maximum of the $k$ instances
+</div>    
+
+## Trees as a Nearest Neighbors
+
+<div class = "columns-2">
+  
+  ```{r, out.width = 400, echo = FALSE}
+  path = 'figs/KNN_RF.png'
+  knitr::include_graphics(path)
+  ```
+  - RF can be viewed as weighted neighborhoods schemes.  
+    + $\hat{y} = \sum_{i=1}^{n} W(x_i, x') y_i$.  
+    + where $W(x_i, x')$ is the non-negative weight of the $i$th training point relative to the new point $x'$.  
+    + In $k$-NN, the weight $W(x_i, x') = \frac{1}{k}$ if $x_i$ is one of the $k$ points closest to $x'$, and zero otherwise.  
+    + In RF, $W(X_i, x') = \frac{1}{k'}$ if $x_i$ is one of the $k'$ points in the same leaf as $x'$, and zero otherwise.  
+    + Since a forest averages the predictions of a set of m trees with individual weight functions $\hat{y} = \sum_{i=1} (\frac{1}{m}\sum_j=1}^{m} W_j(x_i, x') )$.  
+
+</div>    
+
+This shows that the whole forest is again a weighted neighborhood scheme, with weights that average those of the individual trees. The neighbors of x' in this interpretation are the points $x_{i}$ which fall in the same leaf as x' in at least one tree of the forest. In this way, the neighborhood of x' depends in a complex way on the structure of the trees, and thus on the structure of the training set. 
+
+For more detail, See [Lin and Jeon (2006)](http://zmjones.com/static/statistical-learning/lin-jasa-2006.pdf).
+
+
+
+## Trees as a Neural Netroks  
+
+```{r, out.width = 700, echo = FALSE}
+path = 'figs/TREE_NN.png'
+knitr::include_graphics(path)
+```
+
+
+## Trees as a Neural Netroks: First Hidden Layer
+
+```{r, out.width = 800, echo = FALSE}
+path = 'figs/TREE_1st_layer.png'
+knitr::include_graphics(path)
+```
+
+## Trees as a Neural Netroks: Second Hidden Layer
+
+```{r, out.width = 800, echo = FALSE}
+path = 'figs/TREE_2nd_layer.png'
+knitr::include_graphics(path)
+```
+
+
+## Trees as a Neural Netroks: Output Layer
+
+```{r, out.width = 800, echo = FALSE}
+path = 'figs/TREE_output_layer.png'
+knitr::include_graphics(path)
+```
+
+
+## RF as a Neural Networks
+
+```{r, out.width = 800, echo = FALSE}
+path = 'figs/RF_NN.png'
+knitr::include_graphics(path)
+```
+
+## Neural random forests  
+
+<div class = "columns-2">
+  ```{r, out.width = 350, echo = FALSE}
+  path = 'figs/NRF_ind.png'
+  knitr::include_graphics(path)
+  ```
+
+  ```{r, out.width = 350, echo = FALSE}
+  path = 'figs/NRF_joint.png'
+  knitr::include_graphics(path)
+  ```
+</div>
+
+
+## Deep neural decision forests  
+
+  - Stochastic & differentiable RF
+  - Unifies representation learning and classifier
+  - Moves away from greedy, local construction of traditional RFs
+  - Learning of split node parameters using SGD & backprop
+  - Given state of tree/network, get leaf predictions
+
+See [the talk slide](http://www.robots.ox.ac.uk/~tvg/publications/talks/deepNeuralDecisionForests.pdf)
+

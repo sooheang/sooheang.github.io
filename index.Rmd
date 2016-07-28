@@ -1,6 +1,6 @@
 ---
 title: "Tree-structured Methods and its Relationship with Deep Learning"
-author: "Soo-Heang Eo, PhD"
+author: "Unknown, PhD"
 date: "July 26, 2016"
 output:
   ioslides_presentation:
@@ -204,16 +204,13 @@ The type of decision depends on the context. In predictive modeling, the decisio
 
 ## Notations
 
-<div class = "columns-2">
-```{r, out.width = 450, echo = FALSE}
-knitr::include_graphics(path = 'figs/Notations.png')
-```
--
-
-```{r, out.width = 450, echo = FALSE}
-knitr::include_graphics(path = 'figs/Notations_more.png')
-```
-</div>
+- $t$ and $T$: a node and a tree
+- $N$ and $N(t)$: sample size and number of samples in t 
+- $Y$ : response variable
+- $p$: number of predictor variables
+- $k$: number of partitioning variables
+- $X = (X_1, \ldots ,X_p)$: vector of fitted variables
+- $Z = (Z_1, \ldots ,Z_k)$: vector of split variables
 
 ## CART: Node Impurity Measures (Node Model)
 

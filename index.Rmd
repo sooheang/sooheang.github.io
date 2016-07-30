@@ -212,22 +212,47 @@ The type of decision depends on the context. In predictive modeling, the decisio
 - $X = (X_1, \ldots ,X_p)$: vector of fitted variables
 - $Z = (Z_1, \ldots ,Z_k)$: vector of split variables
 
-## CART: Node Impurity Measures (Node Model)
+## CART: Regression Tree Algorithm
 
-<div class = "centered">
-```{r, out.width = 800, echo = FALSE}
-knitr::include_graphics(path = 'figs/CART_reg_impurity.png')
-```
-</div>
+1. Fit a constant, **the node mean $\bar{Y}_t$** at a node $t$
+
+2. Use sum of squared deviations $\sum_{i \in t} (Y_i - \bar{Y}_t)^2$ as a node impurity $i(t)$
+
+3. Choose **the split set** that maximizes the decrease in node impurity 
+
+4. Use $\bar{Y}_t$ in node $t$ as predicted value.
+
+5. **Prune tree** using test sample or cross-validation
+
+6. Use surrogate spilts to deal with missing values
 
 
 ## CART: Split Set Selection
 
-<div class = "centered">
-```{r, out.width = 800, echo = FALSE}
-knitr::include_graphics(path = 'figs/CART_split.png')
-```
-</div>
+A naive approach is to evaluate the reduction of impurity, $\Delta i(\cdot)$, over all possible splits, and select the split set with the greatest reduction of impurity,
+
+1. Define the doofness of a split $s$ as
+
+$$
+\Delta i(s,t) = i(t) - p_L i(t_L) - p_R i(t_R),
+$$
+
+  * where $t_L$ and $t_R$ are the left and right subnodes of $t$ and $p_L$ and $p_R$ are the probabilities being in those subnodes.
+
+
+2. Define a set $S$ of binary splits of the form $X \in A$, where, 
+
+$$
+A = (-\infty, c], \mbox{if $X$ is ordinal}
+$$
+
+$$
+A \in X, \mbox{if $X$ is categorical}
+$$
+
+  * If $X$ is ordinal (numerical) with $k$ unique values, there are $(k-1)$ splits  
+  * If $X$ is categorical with $k$ unique values, there are $(2^{k-1} - 1)$ splits
+
 
 ## CART: Split Set Selection
 
@@ -300,13 +325,19 @@ knitr::include_graphics(path = 'figs/CART_importance_ranking.png')
 
 ## CART: Problems
 
-- Biased toward variables with more splits: A k-valued ordered variable has (k − 1) splits; a k-valued categorical variable has (2k−1 − 1) splits.   
+  - **Biased toward variables with more splits**
+    + A $k$-valued ordered variable has $(k − 1)$ splits.
+    + A $k$-valued categorical variable has $(2^{k−1} − 1)$ splits.
 
-- Biased toward predictors with more missing values: Split method uses only proportions of nonmissing cases—it ignores the number of missing values. A variable taking a unique value for exactly one case in each class and missing on all other cases yields the largest decrease in impurity. Bias exists for surrogate splits too.   
+  - **Biased toward predictors with more missing values**
+    + Split method uses only proportions of nonmissing cases; it ignores the number of missing values.
+    + A variable taking a unique value for exactly one case in each class and missing on all other cases yields the largest decrease in impurity. Bias exists for surrogate splits too.   
 
-- Computation: Impractical when there are three or more classes and categorical variables with many values. Note: Because CART and RPART encode each categorical variable split with a 32-bit binary integer, they do not properly deal with categorical variables having more than 32 values.  
+  - **Computation** 
+    + Impractical when there are three or more classes and categorical variables with many values.     + Note: Because CART and RPART encode each categorical variable split with a 32-bit binary integer, they do not properly deal with categorical variables having more than 32 values.  
 
-- Prediction accuracy: Often no better than linear discriminant analysis.   
+  - **Prediction accuracy**
+    + Often no better than linear discriminant analysis.   
 
 
 ## GUIDE: Residual-based Tree-structured Modeling (Residual Analysis)

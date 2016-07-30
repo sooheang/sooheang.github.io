@@ -607,6 +607,10 @@ See **[partykit](http://eeecon.uibk.ac.at/~zeileis/papers/NUS-2014.pdf)** packag
 
 ## Motivation
 
+  - **Goal**
+    + Predict $y^{*}$ using learning data $(y,x)_{i=1}^{N}$ $\rightarrow$ **Batch Learning**
+    + Or, perdict $y^{*}$ using test data $x^{*}$ $\rightarrow$ **Online Learning**
+
   - Tree-structured Modeling
     + Weak learner
     + Large variance
@@ -615,14 +619,29 @@ See **[partykit](http://eeecon.uibk.ac.at/~zeileis/papers/NUS-2014.pdf)** packag
     + $Var(X) = \sigma^2 \rightarrow Var(\frac{1}{n}\sum_{i=1}^{n}X_i) = \frac{\sigma^2}{n}$
     + with resampling techniques
     
+  - Recipe for prediction: Use a **random forest**
+    + Ensemble of randomized decision trees
+    + State-of-the-art for lots of real world prediction tasks
+    + Do we Need Hundreds of Classifiers to Solve Real World Classification Problems? ([Fernandez-Delgado et al., 2014](http://www.jmlr.org/papers/volume15/delgado14a/delgado14a.pdf))
     
-## History
+    
+## Remember: Classification Tree
 
-  History of Random Forest (RF)
+- Hierarchical axis-aligned binary partitioning of input space
+- Rule for predicting label within each block
 
+<div class = "centered">
+```{r, out.width = 600, echo = FALSE}
+knitr::include_graphics(path = 'figs/Remember_tree.png')
+```
+</div>
+
+- $T$ : list of nodes, feature-id + location of splits for internal nodes
+- $\theta$: Multinomial parameters at leaf nodes
 
 ## Breiman's RF Algorithm (2001)
 
+Bagging + Randomly subsample features and choose best location amongst subsampled features
 <div class = "centered">
 ```{r, out.width = 600, echo = FALSE}
 knitr::include_graphics(path = 'figs/rf_algorithm.png')
@@ -712,7 +731,7 @@ Online learning is a method in which data becomes available in a sequential orde
 
   - [Yi et al. (2012)](http://vision.ucla.edu/papers/yiS12ITA.pdf) propose **Information Forests** whose construction consists in deferring classification until a measure of classification confidence is sufficiently high, and in fact break down the data so as to maximize this measure.
   - [Lakshminarayanan et al. (2014)](https://arxiv.org/abs/1406.2673) porpose **Mondrian Forests** which are grown in an online fashion and achieve competitive predicive performance comparable with other online random forests while being faster.
-    + [Mondrian Forests](http://videolectures.net/site/normal_dl/tag=939850/sahd2014_teh_mondrian_forests_01.pdf) = Mondrian process + RF  
+    + [Mondrian Forests](https://project.inria.fr/bnpsi/files/2015/07/balaji.pdf) = Mondrian process + RF  
     + Mondrian process: a stochastic process over binary hierarchical axis-aligned partitions of $R^d$ ([Roy and Tch, 2009](http://www.stats.ox.ac.uk/~teh/research/npbayes/RoyTeh2009a.pdf))
     + See [Prof. Teh's talk](http://videolectures.net/sahd2014_teh_mondrian_forests/)
     + Python package is available at [Github](https://github.com/balajiln/mondrianforest)
